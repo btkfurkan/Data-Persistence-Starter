@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,22 +8,26 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text bestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
-    
+
     private bool m_GameOver = false;
 
-    
-    // Start is called before the first frame update
+
+
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        ScoreText.text = $"{GameManager.instance.GetName()} Score : {m_Points}";
+        bestScoreText.text = $"Best Score : {GameManager.instance.GetName()} {GameManager.instance.GetScore()}";
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -57,20 +59,38 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                ScreenManaget.SM.StartGame(0);
             }
+
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
         }
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"{GameManager.instance.GetName()} Score : {m_Points}";
+
+        if (m_Points > GameManager.instance.GetScore())
+        {
+            GameManager.instance.SetScore(m_Points);
+            bestScoreText.text = $"Best Score : {GameManager.instance.GetName()} {m_Points}";
+        }
+        else return;
+
+
+
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void BackMenuButton()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
